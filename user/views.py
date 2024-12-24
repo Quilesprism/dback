@@ -16,6 +16,7 @@ import requests
 from jose import JWTError, jwt
 logger = logging.getLogger(__name__)
 AUTH0_AUDIENCE = 'WCjafQ8oP9mB45jeQdxH8Y03bkgRySei'
+
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -55,12 +56,12 @@ class LoginView(APIView):
 class GoogleLoginView(generics.GenericAPIView):
     def verify_auth0_token(self, token):
         try:
-            # Verifica el encabezado
+         
             header = jwt.get_unverified_header(token)
             if 'kid' not in header:
                 raise JWTError('No kid in header')
 
-            # Obtén las claves públicas de Auth0
+         
             jwks_url = f'https://{AUTH0_DOMAIN}/.well-known/jwks.json'
             response = requests.get(jwks_url)
             jwks = response.json()
@@ -79,13 +80,13 @@ class GoogleLoginView(generics.GenericAPIView):
             if not rsa_key:
                 raise JWTError('No matching key found')
 
-            # Decodifica el token y verifica la firma
+           
             payload = jwt.decode(
                 token,
                 rsa_key,
                 algorithms=['RS256'], 
                 audience= AUTH0_AUDIENCE,
-                options={"verify_iss": True, "verify_aud": True}  # Verificar el emisor y audiencia
+                options={"verify_iss": True, "verify_aud": True}  
             )
 
             return payload
